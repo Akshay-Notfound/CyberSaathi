@@ -38,26 +38,84 @@ This system uses **ML, NLP, OCR, and conversational AI** to transform unstructur
 
 ---
 
-## 🏗️ Architecture
+## 🖥️ GUI Workflow & User Journey
 
+```mermaid
+flowchart TD
+    subgraph UI["🖥️ Frontend GUI Navigation (React + Vite)"]
+        LP["🏠 Landing Page<br/>Overview & Emergency Contacts"]
+        AU["🔐 Auth System<br/>Secure JWT Login / Register"]
+        DB["📊 User Dashboard<br/>Complaint History & Quick Actions"]
+        CH["💬 CyberSaathi AI Chatbot<br/>• Conversational Incident Intake<br/>• Real-time Entity Detection<br/>• Dynamic Evidence Checklist<br/>• Live Risk Scoring"]
+        EV["📁 Evidence Processing Lab<br/>• OCR Screenshot & Document Scan<br/>• Visual File Previews<br/>• Entity Auto-extraction"]
+        CP["📋 Complaint Review & Export<br/>• Structured 10-Section Legal Template<br/>• Embedded Image & PDF Exhibits<br/>• Chronological Timeline"]
+        MC["📈 ML Model Benchmark<br/>• Real-time Classifier Comparison<br/>• Accuracy, Precision, F1-Score Charts"]
+    end
+
+    LP --> AU
+    AU --> DB
+    DB --> CH
+    CH --> EV
+    EV --> CP
+    DB --> CP
+    DB --> MC
+    CP --> PDF["📄 Download Official PDF Complaint"]
 ```
-Frontend (React + Vite)
-    └── Pages: Landing, Auth, Dashboard, Chat, Evidence, Complaint, ML Benchmark
 
-Backend (FastAPI + Python)
-    ├── Auth (JWT + bcrypt)
-    ├── Chat API (Gemini + NER + Classifier + Risk Scorer)
-    ├── Evidence API (OCR + Entity Extraction)
-    ├── Complaint API (Generator + PDF Export)
-    └── ML API (Benchmark + Training)
+---
 
-ML Pipeline
-    ├── TF-IDF + Naive Bayes / Logistic Regression / SVM / Random Forest
-    ├── Custom NER (regex pipeline for Indian cybercrime entities)
-    ├── Weighted Risk Scorer
-    └── OCR → Entity Extraction pipeline
+## 🏗️ System Architecture & Data Flow
 
-Database: PostgreSQL (users, complaints, chat messages, evidence files)
+```mermaid
+graph TB
+    subgraph Client["🖥️ User Interface (React + Vite)"]
+        UI_Chat["💬 Chat & Voice Interface"]
+        UI_Evidence["🖼️ Evidence Viewer & OCR"]
+        UI_Complaint["📋 Complaint Review & Preview"]
+        UI_Charts["📊 ML Metrics & Visualizations"]
+    end
+
+    subgraph API["⚙️ FastAPI Backend Services"]
+        AuthRoute["/api/auth (JWT Security)"]
+        ChatRoute["/api/chat (Intake Engine)"]
+        EvidenceRoute["/api/evidence (OCR & Media)"]
+        ComplaintRoute["/api/complaint (Generator & PDF)"]
+        MLRoute["/api/ml (Model Benchmarks)"]
+    end
+
+    subgraph ML["🧠 AI & Machine Learning Pipeline"]
+        Classifier["TF-IDF Crime Classifier<br/>(SVM, Naive Bayes, Random Forest, LogReg)"]
+        NER["Custom Indian Cybercrime NER<br/>(UPI IDs, Txn IDs, Bank Names, Phone Nos)"]
+        OCR["OCR & Document Engine<br/>(Tesseract OCR + PyMuPDF)"]
+        RiskEngine["Multi-Factor Risk Scorer<br/>(Financial Loss + Urgency + Crime Type)"]
+        Gemini["Google Gemini Conversational AI<br/>(Intelligent Dialogue & Formal Description)"]
+    end
+
+    subgraph Storage["🗄️ Database & Storage Layer"]
+        Postgres[("🐘 PostgreSQL (Users, Complaints, Timeline)")]
+        Uploads["📂 Sandboxed Media Storage (Evidence Screenshots & PDFs)"]
+    end
+
+    UI_Chat --> ChatRoute
+    UI_Evidence --> EvidenceRoute
+    UI_Complaint --> ComplaintRoute
+    UI_Charts --> MLRoute
+
+    ChatRoute --> Gemini
+    ChatRoute --> Classifier
+    ChatRoute --> NER
+    ChatRoute --> RiskEngine
+
+    EvidenceRoute --> OCR
+    OCR --> NER
+    EvidenceRoute --> Uploads
+
+    ComplaintRoute --> Postgres
+    ComplaintRoute --> PDFGen["📄 ReportLab PDF Generator<br/>(Embedded Visual Screenshot Exhibits)"]
+    
+    AuthRoute --> Postgres
+    ChatRoute --> Postgres
+    EvidenceRoute --> Postgres
 ```
 
 ---
