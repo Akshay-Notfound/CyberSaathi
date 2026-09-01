@@ -2,10 +2,20 @@
 
 > **CyberSaathi** — Machine Learning + NLP + OCR + Conversational AI for cybercrime complaint analysis and reporting
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/Frontend-React+Vite-61DAFB?logo=react)](https://reactjs.org)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)](https://postgresql.org)
-[![Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?logo=google)](https://ai.google.dev)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/Frontend-React%2019-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Build-Vite%208-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev)
+[![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
+[![Tesseract OCR](https://img.shields.io/badge/OCR-Tesseract-5C6BC0?style=flat-square&logo=google&logoColor=white)](https://github.com/tesseract-ocr/tesseract)
+[![PyMuPDF](https://img.shields.io/badge/PDF%20Parser-PyMuPDF-D32F2F?style=flat-square&logo=adobe-acrobat-reader&logoColor=white)](https://pymupdf.readthedocs.io)
+[![ReportLab](https://img.shields.io/badge/PDF%20Export-ReportLab-FF7043?style=flat-square&logo=adobe&logoColor=white)](https://www.reportlab.com)
+[![JWT Auth](https://img.shields.io/badge/Security-JWT%20%2B%20Bcrypt-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)](https://jwt.io)
+[![Chart.js](https://img.shields.io/badge/Analytics-Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white)](https://www.chartjs.org)
+[![Docker](https://img.shields.io/badge/Container-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://docker.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
 
 ---
 
