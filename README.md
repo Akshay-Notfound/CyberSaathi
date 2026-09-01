@@ -1,6 +1,6 @@
 # 🛡️ AI-Powered Cyber Crime Complaint & Assistance System
 
-> **Final Year Project** — Machine Learning + NLP + OCR + Conversational AI for cybercrime complaint analysis and reporting
+> **CyberSaathi** — Machine Learning + NLP + OCR + Conversational AI for cybercrime complaint analysis and reporting
 
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/Frontend-React+Vite-61DAFB?logo=react)](https://reactjs.org)
@@ -184,4 +184,4 @@ This system is an **AI-assisted decision-support tool** for complaint preparatio
 
 ---
 
-*Built with ❤️ for the Final Year Project — AI-Powered Cyber Crime Complaint & Assistance System*
+*CyberSaathi — AI-Powered Cyber Crime Complaint & Assistance System*

@@ -108,7 +108,7 @@ export default function Landing() {
             fontWeight: 600,
           }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', animation: 'pulse-critical 2s infinite' }} />
-            Final Year Project · ML + NLP + OCR
+            AI Cybercrime Assistance · ML + NLP + OCR
           </div>
 
           <h1 style={{ marginBottom: '20px', lineHeight: 1.15 }}>
@@ -276,7 +276,7 @@ export default function Landing() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span>🛡️</span>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700 }}>CyberSaathi</span>
-          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>AI-Powered Cybercrime Complaint System · Final Year Project</span>
+          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>AI-Powered Cybercrime Complaint & Assistance System</span>
         </div>
         <div style={{ display: 'flex', gap: '20px', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
           <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-blue-light)' }}>cybercrime.gov.in</a>
