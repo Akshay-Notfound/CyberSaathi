@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Upload, FileText, AlertCircle, Brain, Shield } from 'lucide-react';
-import useStore from '../store/useStore';
+import useStore, { API_BASE } from '../store/useStore';
 import RiskBadge, { RiskMeter } from '../components/RiskBadge';
 import EntityCard from '../components/EntityCard';
 import EvidenceChecklist from '../components/EvidenceChecklist';
@@ -93,7 +93,7 @@ export default function Chat() {
     if (activeComplaintId) {
       try {
         const token = useStore.getState().token;
-        const response = await fetch(`http://localhost:8000/api/complaint/${activeComplaintId}/pdf`, {
+        const response = await fetch(`${API_BASE}/api/complaint/${activeComplaintId}/pdf`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -477,7 +477,7 @@ export default function Chat() {
                         }}>
                           {isImg && fileId ? (
                             <img
-                              src={`http://localhost:8000/api/evidence/preview/${fileId}`}
+                              src={`${API_BASE}/api/evidence/preview/${fileId}`}
                               alt={ef.filename}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               onError={(e) => {

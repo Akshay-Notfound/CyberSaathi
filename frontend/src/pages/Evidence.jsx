@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, X } from 'lucide-react';
-import useStore from '../store/useStore';
+import useStore, { API_BASE } from '../store/useStore';
 
 const ACCEPTED_TYPES = {
   'image/jpeg': { icon: '🖼️', label: 'JPEG Image' },
@@ -188,7 +188,7 @@ export default function Evidence() {
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <a
-                  href={`http://localhost:8000/api/evidence/file/${selectedFile.id}`}
+                  href={`${API_BASE}/api/evidence/file/${selectedFile.id}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-secondary btn-sm"
@@ -219,7 +219,7 @@ export default function Evidence() {
               }}>
                 {selectedFile.file_type === 'image' || (selectedFile.filename && selectedFile.filename.match(/\.(jpg|jpeg|png|webp|bmp|gif)$/i)) ? (
                   <img
-                    src={`http://localhost:8000/api/evidence/file/${selectedFile.id}`}
+                    src={`${API_BASE}/api/evidence/file/${selectedFile.id}`}
                     alt={selectedFile.filename}
                     style={{
                       maxWidth: '100%',
@@ -236,7 +236,7 @@ export default function Evidence() {
                 ) : selectedFile.file_type === 'pdf' || (selectedFile.filename && selectedFile.filename.match(/\.pdf$/i)) ? (
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                     <img
-                      src={`http://localhost:8000/api/evidence/preview/${selectedFile.id}`}
+                      src={`${API_BASE}/api/evidence/preview/${selectedFile.id}`}
                       alt="PDF Page Preview"
                       style={{
                         maxWidth: '100%',
@@ -250,7 +250,7 @@ export default function Evidence() {
                       }}
                     />
                     <a
-                      href={`http://localhost:8000/api/evidence/file/${selectedFile.id}`}
+                      href={`${API_BASE}/api/evidence/file/${selectedFile.id}`}
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-primary btn-sm"
@@ -358,7 +358,7 @@ function EvidenceFileRow({ file, onSelect }) {
       >
         {isImage ? (
           <img
-            src={`http://localhost:8000/api/evidence/preview/${file.id}`}
+            src={`${API_BASE}/api/evidence/preview/${file.id}`}
             alt={file.filename}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {

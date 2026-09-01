@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useStore, { api } from '../store/useStore';
+import useStore, { api, API_BASE } from '../store/useStore';
 import RiskBadge from '../components/RiskBadge';
 import ComplaintPreview from '../components/ComplaintPreview';
 import Timeline from '../components/Timeline';
@@ -48,7 +48,7 @@ export default function Complaint() {
   const handleDownloadPdf = () => {
     if (activeComplaintId) {
       const token = useStore.getState().token;
-      const w = window.open(`http://localhost:8000/api/complaint/${activeComplaintId}/pdf`, '_blank');
+      const w = window.open(`${API_BASE}/api/complaint/${activeComplaintId}/pdf`, '_blank');
     }
   };
 
@@ -249,7 +249,7 @@ export default function Complaint() {
                         }}>
                           {isImg ? (
                             <img
-                              src={`http://localhost:8000/api/evidence/preview/${ef.id}`}
+                              src={`${API_BASE}/api/evidence/preview/${ef.id}`}
                               alt={ef.filename}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               onError={(e) => {
@@ -378,7 +378,7 @@ export default function Complaint() {
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <a
-                  href={`http://localhost:8000/api/evidence/file/${selectedEvidence.id}`}
+                  href={`${API_BASE}/api/evidence/file/${selectedEvidence.id}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-secondary btn-sm"
@@ -406,7 +406,7 @@ export default function Complaint() {
             }}>
               {selectedEvidence.file_type === 'image' || (selectedEvidence.filename && selectedEvidence.filename.match(/\.(jpg|jpeg|png|webp|bmp|gif)$/i)) ? (
                 <img
-                  src={`http://localhost:8000/api/evidence/file/${selectedEvidence.id}`}
+                  src={`${API_BASE}/api/evidence/file/${selectedEvidence.id}`}
                   alt={selectedEvidence.filename}
                   style={{
                     maxWidth: '100%',
@@ -423,7 +423,7 @@ export default function Complaint() {
               ) : selectedEvidence.file_type === 'pdf' || (selectedEvidence.filename && selectedEvidence.filename.match(/\.pdf$/i)) ? (
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                   <img
-                    src={`http://localhost:8000/api/evidence/preview/${selectedEvidence.id}`}
+                    src={`${API_BASE}/api/evidence/preview/${selectedEvidence.id}`}
                     alt="PDF Page Preview"
                     style={{
                       maxWidth: '100%',
@@ -437,7 +437,7 @@ export default function Complaint() {
                     }}
                   />
                   <a
-                    href={`http://localhost:8000/api/evidence/file/${selectedEvidence.id}`}
+                    href={`${API_BASE}/api/evidence/file/${selectedEvidence.id}`}
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-primary btn-sm"

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8000';
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Configure axios
 const api = axios.create({ baseURL: API_BASE });

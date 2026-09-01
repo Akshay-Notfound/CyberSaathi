@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../store/useStore';
 
 const SECTIONS = [
   { key: 'complainant', label: '👤 Complainant Details' },
@@ -124,7 +125,7 @@ export default function ComplaintPreview({ complaintText, complaint }) {
                       <div style={{ height: '110px', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                         {isImg ? (
                           <img
-                            src={`http://localhost:8000/api/evidence/preview/${ef.id}`}
+                            src={`${API_BASE}/api/evidence/preview/${ef.id}`}
                             alt={ef.filename}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={(e) => {
