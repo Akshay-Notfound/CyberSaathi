@@ -11,6 +11,7 @@ asyncpg
 # Auth & Security
 python-jose[cryptography]
 passlib[bcrypt]
+bcrypt
 python-dotenv
 
 # Google Gemini AI
