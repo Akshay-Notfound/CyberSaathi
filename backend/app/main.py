@@ -67,8 +67,11 @@ async def startup():
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
 
     # Create database tables
-    await create_tables()
-    logger.info("✓ Database tables created/verified")
+    try:
+        await create_tables()
+        logger.info("✓ Database tables created/verified")
+    except Exception as e:
+        logger.warning(f"Database connection warning on startup: {e}")
 
     # Ensure upload directory exists
     Path(settings.UPLOAD_DIR).mkdir(exist_ok=True)
