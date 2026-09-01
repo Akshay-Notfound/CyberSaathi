@@ -11,6 +11,7 @@ import logging
 
 from app.core.config import settings
 from app.core.database import create_tables
+import app.models  # noqa: F401
 from app.api import auth, chat, evidence, complaint, models_comparison
 
 # Configure logging
