@@ -1,0 +1,53 @@
+# Core Framework
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Database
+sqlalchemy
+alembic
+asyncpg
+
+# Auth & Security
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+
+# Google Gemini AI
+google-generativeai
+
+# ML & NLP
+scikit-learn
+numpy
+pandas
+scipy
+joblib
+
+# NER & Text Processing
+spacy
+regex
+
+# Transformers (DistilBERT)
+# (Available via Colab for GPU training to avoid Windows path limits)
+
+# OCR & Document Processing
+pytesseract
+Pillow
+PyMuPDF
+opencv-python-headless
+
+# PDF Generation
+reportlab
+
+# HTTP & Utilities
+httpx
+aiofiles
+pydantic[email]
+pydantic-settings
+
+# CORS
+starlette
+
+# Testing
+pytest
+pytest-asyncio

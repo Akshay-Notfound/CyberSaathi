@@ -1,0 +1,106 @@
+complaint_text,crime_category,financial_loss,payment_method,urgency
+"I received a call from someone claiming to be from my bank SBI. They said my account was about to be blocked and asked me to share my OTP. I shared it and immediately ₹45000 was debited from my account.",OTP / Social Engineering,45000,UPI,CRITICAL
+"Someone called me pretending to be a HDFC bank executive. They asked for my debit card number CVV and OTP. I gave it to them and lost ₹60000.",OTP / Social Engineering,60000,Debit Card,CRITICAL
+"I got an SMS saying my account will be suspended. It had a link. I clicked it and entered my net banking credentials. Now my account shows unauthorized transactions of ₹30000.",Phishing,30000,Net Banking,CRITICAL
+"I received an email from what looked like my bank asking me to verify my account by clicking a link. I clicked and entered my details. Later found ₹15000 missing.",Phishing,15000,Net Banking,HIGH
+"I applied for a job online. They sent me an offer letter and asked for a registration fee of ₹2500 via UPI. After payment they asked for more fees and then stopped responding.",Job / Employment Fraud,2500,UPI,MEDIUM
+"I found a job offer on WhatsApp for data entry work from home. They said I need to pay ₹5000 security deposit which will be refunded. I paid but never got any work or refund.",Job / Employment Fraud,5000,UPI,MEDIUM
+"I invested ₹150000 in an online trading app they promoted on Telegram. Initially I could see profits but when I tried to withdraw they said I need to pay 20% tax first.",Investment Fraud,150000,Bank Transfer,CRITICAL
+"Someone added me to a WhatsApp group about stock market investments. They showed fake profits. I invested ₹80000 total. Now the app doesn't work and they blocked me.",Investment Fraud,80000,UPI,HIGH
+"I ordered a mobile phone from a website that looked genuine. I paid ₹12000 but received a soap box instead. The seller is not responding.",E-commerce Fraud,12000,UPI,MEDIUM
+"I bought shoes for ₹3500 from an Instagram shop. They took payment but never delivered. The account is now deleted.",E-commerce Fraud,3500,UPI,LOW
+"Someone created a fake Instagram profile using my photos and name. They are asking my friends for money. No financial loss yet.",Impersonation,0,Social Media,MEDIUM
+"A fake Facebook account was made in my name. They are posting offensive content and messaging my contacts. I don't know who did it.",Impersonation,0,Social Media,MEDIUM
+"I received a WhatsApp message from an unknown number saying my friend is in trouble and needs money urgently. I transferred ₹8000 before realizing it was a scam.",Social Media Fraud,8000,UPI,HIGH
+"Someone hacked my Instagram account. Now they are posting stories asking my followers to send money. I cannot login to my account.",Account Compromise,0,Social Media,HIGH
+"My Gmail was hacked. The hacker is sending emails to my contacts asking for money transfers. I have lost access.",Account Compromise,0,Email,HIGH
+"My WhatsApp was taken over. The person is messaging all my contacts asking for money. I cannot access my own WhatsApp.",Account Compromise,0,Social Media,CRITICAL
+"Someone used my PAN card and Aadhaar to take a loan of ₹200000 in my name. I got a loan repayment notice but never took any loan.",Identity Theft,0,Loan,CRITICAL
+"I found a credit card was opened in my name without my knowledge. There are transactions I didn't make. My Aadhaar details were misused.",Identity Theft,0,Credit Card,HIGH
+"I paid ₹20000 UPI to someone who said they would double it through cryptocurrency trading. They disappeared after payment.",Cryptocurrency Fraud,20000,UPI,HIGH
+"I was told to invest in a new cryptocurrency. I sent ₹50000 worth of USDT to their wallet. Now the platform is down.",Cryptocurrency Fraud,50000,Crypto,HIGH
+"Someone is threatening to share my personal photos online unless I pay ₹10000. They say they have my data.",Cyber Extortion,0,Threat,CRITICAL
+"I am receiving threatening calls demanding ₹50000 or they will file false police cases against me. This has been going on for a week.",Cyber Extortion,0,Threat,CRITICAL
+"My computer is infected. All files are locked and there is a message demanding ₹300000 in Bitcoin to unlock them.",Malware / Ransomware,0,Crypto,CRITICAL
+"I clicked a link and now my phone is behaving strangely. Apps are opening by themselves and I think someone has remote access.",Malware / Ransomware,0,Device,HIGH
+"I made a UPI payment of ₹5000 to a wrong UPI ID by mistake. I want to know how to get a refund.",UPI / Payment Fraud,5000,UPI,LOW
+"Someone scanned a QR code on my behalf at a shop. ₹3200 was deducted from my account that I didn't authorize.",UPI / Payment Fraud,3200,UPI,MEDIUM
+"I received a UPI request for ₹1 for verification. I approved it but ₹25000 got deducted. I don't know how.",UPI / Payment Fraud,25000,UPI,CRITICAL
+"Fraudster posed as a buyer for my product listed on OLX. Sent a QR code for payment and ₹18000 was debited instead of credited.",UPI / Payment Fraud,18000,UPI,HIGH
+"They said I won a lottery prize. I had to pay ₹10000 to claim ₹10 lakh prize. I paid but got nothing.",OTP / Social Engineering,10000,UPI,MEDIUM
+"Received a message saying I got a refund of ₹5000 from income tax. Clicked the link and my bank account got hacked.",Phishing,20000,Net Banking,HIGH
+"Applied for a loan online. They approved it and asked for processing fees of ₹3000. After paying they asked for insurance of ₹5000 too. Total loss ₹8000.",Job / Employment Fraud,8000,UPI,MEDIUM
+"Fake matrimonial profile. The person chatted for months then said they are stuck abroad and need ₹50000 urgent help.",Social Media Fraud,50000,Bank Transfer,HIGH
+"Received a message that I won iPhone. Need to pay ₹500 delivery charges. Paid but nothing came.",E-commerce Fraud,500,UPI,LOW
+"Someone used my credit card details to make online purchases worth ₹35000. I never shared my card details.",Banking Fraud,35000,Credit Card,CRITICAL
+"Unauthorized transactions happened in my savings account. ₹70000 withdrawn from ATM I didn't go to.",Banking Fraud,70000,ATM,CRITICAL
+"Someone is using my mobile number to get OTPs and access my bank accounts. I think my SIM was cloned.",Banking Fraud,0,SIM,CRITICAL
+"Received multiple calls from 9876500000 about KYC update for my Paytm. Shared my details. Account balance of ₹4000 transferred out.",OTP / Social Engineering,4000,Paytm,HIGH
+"Fake customer care number on Google. Called for help. They asked for remote access and transferred ₹15000 from my account.",OTP / Social Engineering,15000,Net Banking,CRITICAL
+"Someone posted photos of me in a compromising way online. They made a fake adult profile using my pictures.",Cyber Extortion,0,Social Media,CRITICAL
+"My company data was encrypted. Hackers are demanding $5000 in Bitcoin to decrypt files. Production is affected.",Malware / Ransomware,0,Crypto,CRITICAL
+"Got a call saying my Aadhaar is linked to illegal transactions. Police will arrest me unless I pay ₹25000.",OTP / Social Engineering,25000,UPI,HIGH
+"Fake tech support person gained remote access to my computer. They stole saved passwords and banking details.",Malware / Ransomware,30000,Net Banking,CRITICAL
+"Investment in a mutual fund scheme through unknown agents. ₹200000 invested. Company shut down suddenly.",Investment Fraud,200000,Bank Transfer,HIGH
+"Bought concert tickets online. Site was fake. ₹6000 lost. No tickets received.",E-commerce Fraud,6000,Card,LOW
+"Someone using my identity to apply for credit cards and loans. Got calls from banks I never approached.",Identity Theft,0,Credit Card,HIGH
+"Received parcel with wrong items. Seller demands return but refuses refund. Lost ₹8000.",E-commerce Fraud,8000,Card,MEDIUM
+"WhatsApp message from unknown with a link. Clicking made all my WhatsApp contacts receive spam.",Malware / Ransomware,0,Social Media,MEDIUM
+"Girl on dating app turned out to be fake. Chatted for weeks then demanded ₹30000 for emergency.",Social Media Fraud,30000,UPI,HIGH
+"Paid advance rent of ₹40000 via UPI for flat. Owner disappeared. Property was not his.",E-commerce Fraud,40000,UPI,HIGH
+"App from third party store stole my banking credentials. ₹22000 transferred without my knowledge.",Malware / Ransomware,22000,Banking App,CRITICAL
+"UPI fraud where merchant accepted payment but says they didn't receive it. ₹5500 stuck.",UPI / Payment Fraud,5500,UPI,LOW
+"Someone called from police department number saying I need to pay challan of ₹3000 online immediately.",OTP / Social Engineering,3000,UPI,MEDIUM
+"Received SMS about PF claim and clicked on link. My UAN and password were stolen.",Phishing,0,EPFO,MEDIUM
+"Investment in real estate through online broker. ₹500000 invested. No property documents. No contact.",Investment Fraud,500000,Bank Transfer,CRITICAL
+"Received video call from unknown person. Later got threatening messages to pay or video will be shared.",Cyber Extortion,0,Video Call,CRITICAL
+"Credit card skimmed at ATM. ₹45000 fraudulent transactions in different cities.",Banking Fraud,45000,Credit Card,CRITICAL
+"Parcel scam. Got SMS about custom duty for package I didn't order. Paid ₹2000. Was fake.",OTP / Social Engineering,2000,UPI,LOW
+"SIM swap fraud. My mobile number stopped working. Bank sent OTPs to hacker's SIM. ₹180000 lost.",Banking Fraud,180000,Net Banking,CRITICAL
+"Cheated in online gaming. Spent ₹25000 on in-game currency. Game shut down. No refund.",E-commerce Fraud,25000,Card,MEDIUM
+"Received message that my debit card will expire. Need to update via link. Lost ₹8000.",Phishing,8000,Debit Card,HIGH
+"Promised high returns on gold investment. Paid ₹100000. Agent not reachable now.",Investment Fraud,100000,Bank Transfer,HIGH
+"Email from IT department asking for employee credentials to test system. I shared details. Was phishing.",Phishing,0,Corporate,HIGH
+"Friend's account was hacked. Sent me message asking for ₹5000 urgently. I transferred before realizing.",Social Media Fraud,5000,UPI,MEDIUM
+"Online visa assistance scam. Paid ₹15000 for visa processing. Got fake visa. Flight denied.",Job / Employment Fraud,15000,Bank Transfer,HIGH
+"Dating app profile asked for Amazon gift cards worth ₹10000. I sent codes. Then blocked.",Social Media Fraud,10000,Gift Card,MEDIUM
+"Auto-debit scam. App subscribed me to services without consent. ₹999 deducted monthly for 6 months.",E-commerce Fraud,5994,Auto-debit,LOW
+"Received message I owe electricity bill or connection will be cut. Paid ₹1800 UPI to unknown.",OTP / Social Engineering,1800,UPI,LOW
+"Zoom link from fake HR for interview. Downloaded software that was malware.",Malware / Ransomware,0,Software,MEDIUM
+"Investment advisor on LinkedIn promised 30% monthly return. Lost ₹120000 in fake scheme.",Investment Fraud,120000,Bank Transfer,CRITICAL
+"Fake government scholarship scheme. Paid ₹3500 for processing. Was a scam.",Job / Employment Fraud,3500,UPI,LOW
+"Insurance policy fraud. Paid ₹35000 premium. Policy documents were fake. Company doesn't exist.",Investment Fraud,35000,Bank Transfer,HIGH
+"Received SMS from TRAI about mobile number cancellation. Shared details. SIM cloned.",OTP / Social Engineering,0,Telecom,HIGH
+"Cryptocurrency exchange was fake. Deposited ₹75000. Cannot withdraw. Support not responding.",Cryptocurrency Fraud,75000,Crypto,HIGH
+"Received a Google Pay request with sound. Thought it was payment received. Actually money was sent.",UPI / Payment Fraud,7500,UPI,MEDIUM
+"WhatsApp forwards about government schemes. Clicked link. Phone got virus. Contacts spammed.",Malware / Ransomware,0,WhatsApp,LOW
+"Fake Meesho seller. Orders placed. Money taken. Products never shipped. WhatsApp blocked.",E-commerce Fraud,3200,UPI,MEDIUM
+"Aadhaar OTP authentication scam. Shared OTP. Identity used for bank account opening.",Identity Theft,0,Aadhaar,HIGH
+"Fake police officer called. Said my son is arrested. Demanded ₹50000 for bail. Emergency.",OTP / Social Engineering,50000,UPI,HIGH
+"Online loan app charged processing fees then denied loan. ₹2000 gone.",Job / Employment Fraud,2000,UPI,LOW
+"Seller on Facebook marketplace took advance ₹5000 and disappeared.",E-commerce Fraud,5000,UPI,MEDIUM
+"Account hacked. Hacker sent messages to all my friends asking for money. Total ₹40000 lost.",Account Compromise,40000,UPI,CRITICAL
+"Received email from Netflix saying subscription expired with a link. Entered card details. Fraudulent charges.",Phishing,3500,Credit Card,HIGH
+"Fake property dealer. Took token money ₹100000 for property that wasn't his.",E-commerce Fraud,100000,Cheque,CRITICAL
+"International job scam. Paid ₹80000 for visa and flight tickets. Job offer was fake.",Job / Employment Fraud,80000,Bank Transfer,CRITICAL
+"Someone made purchases on Amazon using my account. ₹12000 worth of items ordered to unknown address.",E-commerce Fraud,12000,Saved Card,HIGH
+"Received prize money notification. Need to share bank details to receive ₹5 lakh. It was fraud.",OTP / Social Engineering,0,Bank Details,LOW
+"Fake COVID test certificate scam. Paid ₹1500 for certificate. It was invalid.",Job / Employment Fraud,1500,UPI,LOW
+"Screen sharing scam with bank customer care. Shared screen and lost ₹35000.",OTP / Social Engineering,35000,Net Banking,CRITICAL
+"Someone used my photo to create fake dating profiles and is scamming people.",Impersonation,0,Dating App,MEDIUM
+"Received call about expiring car insurance. Paid ₹8000 to fake agent. No policy issued.",Investment Fraud,8000,UPI,MEDIUM
+"Money mule scam. Transferred money thinking it was legit job. Now under investigation.",Banking Fraud,0,Bank Transfer,HIGH
+"Fake rent agreement scam. Paid ₹50000 for flat that was already rented to someone else.",E-commerce Fraud,50000,Cheque,HIGH
+"Social media account selling discounted items. Paid ₹4500 advance. Seller blocked after payment.",E-commerce Fraud,4500,UPI,MEDIUM
+"Received message about free recharge. Downloaded APK. Phone now doing unusual activity.",Malware / Ransomware,0,APK,MEDIUM
+"Wrong UPI transfer. Sent ₹10000 to wrong number. Person refuses to return money.",UPI / Payment Fraud,10000,UPI,MEDIUM
+"Fake charitable trust. Donated ₹5000 for fake flood victims. Was a scam.",Social Media Fraud,5000,UPI,LOW
+"Child's online gaming account hacked. In-game currency worth ₹8000 stolen.",Account Compromise,8000,Gaming,MEDIUM
+"Fake bank SMS about reward points. Clicked link. Entered details. ₹20000 deducted.",Phishing,20000,Credit Card,CRITICAL
+"Online auction fraud. Won bid. Paid ₹15000. Item never arrived. No contact.",E-commerce Fraud,15000,Bank Transfer,MEDIUM
+"Received threatening letter asking for ₹100000 or family will be harmed.",Cyber Extortion,0,Threat,CRITICAL
+"Sextortion. Compromising screenshots taken during video call. Demanding ₹50000 to not share.",Cyber Extortion,50000,UPI,CRITICAL
+"Fake mutual fund investment app. Showed high returns. ₹300000 invested and locked.",Investment Fraud,300000,Bank Transfer,CRITICAL
+"SCAM ALERT Fake Internships that you should not ever try to apply online by doing 2 tasks and asking you to pay hundreds of your money","Job / Employment Fraud"
+"I got an offer for a data entry internship and they asked me to pay a registration fee.","Job / Employment Fraud"
+"They contacted me on Telegram for a part time internship completing tasks online but it was a scam.","Job / Employment Fraud"
