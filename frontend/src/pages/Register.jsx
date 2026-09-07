@@ -21,7 +21,20 @@ export default function Register() {
         navigate("/dashboard");
       }
     } catch (err) {
-      setError(err.response?.data?.detail || "Registration failed. Please check your information and try again.");
+      let msg = "Registration failed. Please check your information and try again.";
+      if (!err.response) {
+        msg = "Cannot connect to backend server. Please make sure the backend server is running at http://localhost:8000.";
+      } else if (err.response?.data?.detail) {
+        const detail = err.response.data.detail;
+        if (typeof detail === "string") {
+          msg = detail;
+        } else if (Array.isArray(detail)) {
+          msg = detail.map((d) => d.msg || JSON.stringify(d)).join(", ");
+        } else if (typeof detail === "object") {
+          msg = JSON.stringify(detail);
+        }
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -191,7 +204,7 @@ export default function Register() {
             <input
               type="password"
               required
-              minLength={6}
+              minLength={8}
               value={form.password}
               onChange={onChange("password")}
               style={{
@@ -205,7 +218,7 @@ export default function Register() {
                 outline: "none",
                 boxSizing: "border-box",
               }}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               id="register-password"
             />
           </div>

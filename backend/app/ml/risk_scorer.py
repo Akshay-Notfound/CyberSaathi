@@ -186,6 +186,50 @@ def risk_from_dict(data: dict) -> RiskOutput:
     return calculate_risk(inp)
 
 
+def calculate_risk_score(
+    crime_category: str = "",
+    financial_loss: float = 0.0,
+    text: str = "",
+    extracted_entities: Optional[dict] = None,
+) -> dict:
+    """Calculate risk score and return as dictionary."""
+    text_lower = (text or "").lower()
+    inp = RiskInput(
+        financial_loss=financial_loss,
+        account_compromised=any(k in text_lower for k in ["account hacked", "lost access", "locked out"]),
+        otp_shared=any(k in text_lower for k in ["shared otp", "gave otp", "told otp", "otp share"]),
+        password_shared=any(k in text_lower for k in ["shared password", "gave password"]),
+        credentials_exposed=any(k in text_lower for k in ["entered credentials", "login details", "username password"]),
+        ongoing_attack=any(k in text_lower for k in ["still happening", "ongoing", "right now", "currently"]),
+        identity_exposed=any(k in text_lower for k in ["aadhaar", "pan card", "identity"]),
+        extortion_threat=any(k in text_lower for k in ["threatening", "blackmail", "threat", "extortion"]),
+        malware_present=any(k in text_lower for k in ["virus", "malware", "ransomware", "hacked device"]),
+        crime_category=crime_category,
+    )
+    res = calculate_risk(inp)
+    return {
+        "level": res.level,
+        "score": res.score,
+        "breakdown": res.breakdown,
+        "immediate_actions": res.immediate_actions,
+        "explanation": res.explanation,
+    }
+
+
+def identify_missing_info(crime_category: str, entities: Optional[dict] = None) -> list:
+    """Identify missing info fields for a given category and extracted entities."""
+    from app.services.gemini_service import MISSING_INFO_CATEGORIES
+    required_fields = MISSING_INFO_CATEGORIES.get(crime_category, [])
+    entities = entities or {}
+    present_keys = set(entities.keys())
+    missing = []
+    for field in required_fields:
+        if field not in present_keys:
+            missing.append({"field": field, "description": field.replace("_", " ").title()})
+    return missing
+
+
+
 if __name__ == "__main__":
     sample = RiskInput(
         financial_loss=40000,
