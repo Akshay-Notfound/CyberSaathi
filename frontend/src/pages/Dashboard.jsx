@@ -20,16 +20,22 @@ export default function Dashboard() {
     setCreating(true);
     try {
       const complaint = await createComplaint("Untitled Incident");
-      setActiveComplaint(complaint.id);
-      navigate("/chat");
+      if (complaint?.id) {
+        setActiveComplaint(complaint.id);
+        navigate(`/case/${complaint.id}/chat`);
+      }
+    } catch (err) {
+      console.error("Failed to create complaint:", err);
     } finally {
       setCreating(false);
     }
   };
 
   const handleOpenCase = (complaint) => {
-    setActiveComplaint(complaint.id);
-    navigate("/chat");
+    if (complaint?.id) {
+      setActiveComplaint(complaint.id);
+      navigate(`/case/${complaint.id}/chat`);
+    }
   };
 
   return (

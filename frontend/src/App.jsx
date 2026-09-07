@@ -11,6 +11,16 @@ import Login from "./pages/Login";
 import MLDashboard from "./pages/MLDashboard";
 import Register from "./pages/Register";
 
+import useStore from "./store/useStore";
+
+function ActiveCaseRedirect({ subpath = "chat" }) {
+  const activeComplaintId = useStore((s) => s.activeComplaintId);
+  if (activeComplaintId) {
+    return <Navigate to={`/case/${activeComplaintId}/${subpath}`} replace />;
+  }
+  return <Navigate to="/dashboard" replace />;
+}
+
 export default function App() {
   return (
     <Routes>
@@ -40,6 +50,32 @@ export default function App() {
         element={
           <ProtectedRoute>
             <MLDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Direct path fallbacks */}
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <ActiveCaseRedirect subpath="chat" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/evidence"
+        element={
+          <ProtectedRoute>
+            <ActiveCaseRedirect subpath="evidence" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/complaint"
+        element={
+          <ProtectedRoute>
+            <ActiveCaseRedirect subpath="complaint" />
           </ProtectedRoute>
         }
       />

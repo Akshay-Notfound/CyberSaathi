@@ -243,25 +243,38 @@ export default function Landing() {
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Floating draft pill */}
-            <div style={{
-              position: "absolute",
-              bottom: "-16px",
-              left: "-16px",
-              borderRadius: "10px",
-              border: "1px solid rgba(59, 130, 246, 0.25)",
-              background: "#0f172a",
-              padding: "12px 18px",
-              boxShadow: "0 8px 30px rgba(0, 0, 0, 0.5)",
-            }}>
-              <p style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.7rem", color: "#64748b" }}>
-                Complaint draft
-              </p>
-              <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2dd4bf", marginTop: "2px" }}>
-                ✓ 10 sections ready
-              </p>
+              <div style={{
+                marginTop: "16px",
+                padding: "12px 16px",
+                borderRadius: "10px",
+                border: "1px solid rgba(45, 212, 191, 0.25)",
+                background: "rgba(15, 23, 42, 0.7)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}>
+                <div>
+                  <p style={{ fontFamily: "var(--font-mono, monospace)", fontSize: "0.7rem", color: "#64748b" }}>
+                    Complaint draft
+                  </p>
+                  <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#2dd4bf", marginTop: "2px" }}>
+                    ✓ 10 sections ready
+                  </p>
+                </div>
+                <span style={{
+                  borderRadius: "6px",
+                  border: "1px solid rgba(45, 212, 191, 0.3)",
+                  background: "rgba(45, 212, 191, 0.1)",
+                  padding: "4px 10px",
+                  fontFamily: "var(--font-mono, monospace)",
+                  fontSize: "0.75rem",
+                  color: "#2dd4bf",
+                  fontWeight: 600,
+                }}>
+                  PDF Ready
+                </span>
+              </div>
             </div>
           </div>
         </div>
