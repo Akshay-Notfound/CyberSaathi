@@ -113,7 +113,7 @@ export default function Register() {
                 outline: "none",
                 boxSizing: "border-box",
               }}
-              placeholder="Asha Verma"
+              placeholder="Enter your full name"
               id="register-fullname"
             />
           </div>
