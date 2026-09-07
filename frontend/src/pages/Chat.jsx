@@ -1,567 +1,209 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Upload, FileText, AlertCircle, Brain, Shield } from 'lucide-react';
-import useStore, { API_BASE } from '../store/useStore';
-import RiskBadge, { RiskMeter } from '../components/RiskBadge';
-import EntityCard from '../components/EntityCard';
-import EvidenceChecklist from '../components/EvidenceChecklist';
-import ComplaintPreview from '../components/ComplaintPreview';
-import { useNavigate } from 'react-router-dom';
-
-const TABS = [
-  { key: 'entities', label: '🔍 Entities', icon: Brain },
-  { key: 'checklist', label: '✅ Evidence', icon: FileText },
-  { key: 'complaint', label: '📋 Complaint', icon: Shield },
-];
+import React, { useEffect, useRef, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import RiskBadge from "../components/RiskBadge";
+import useComplaintStore from "../store/complaintStore";
+import useStore from "../store/useStore";
 
 export default function Chat() {
-  const {
-    chatMessages, sendMessage, startComplaint, activeComplaintId,
-    extractedEntities, classification, risk, missingInfo, evidenceChecklist,
-    evidenceFiles, uploadEvidence, generateComplaint,
-  } = useStore();
-
-  const [input, setInput] = useState('');
+  const outlet = useOutletContext();
+  const store = useStore();
+  const complaintId = outlet?.complaintId || store.activeComplaintId;
+  const { messages, activeComplaint, startChat, fetchMessages, sendMessage } = useComplaintStore();
+  const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [rightTab, setRightTab] = useState('entities');
-  const [complaintData, setComplaintData] = useState(null);
-  const [generating, setGenerating] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
-  const navigate = useNavigate();
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    if (!activeComplaintId) {
-      startComplaint();
+    if (!complaintId) {
+      startChat();
+      return;
     }
-  }, []);
+    (async () => {
+      const existing = await fetchMessages(complaintId);
+      if (!existing || !existing.length) {
+        await startChat(complaintId);
+      }
+    })();
+  }, [complaintId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages, sending]);
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const handleSend = async () => {
-    const msg = input.trim();
-    if (!msg || sending) return;
-    setInput('');
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || sending) return;
+    const text = input;
+    setInput("");
     setSending(true);
     try {
-      await sendMessage(msg);
-    } catch (err) {
-      console.error('Send failed:', err);
+      await sendMessage(complaintId, text);
     } finally {
       setSending(false);
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingFile(true);
-    try {
-      await uploadEvidence(file);
-    } catch (err) {
-      console.error('Upload failed:', err);
-    } finally {
-      setUploadingFile(false);
-      e.target.value = '';
-    }
-  };
-
-  const handleGenerate = async () => {
-    setGenerating(true);
-    try {
-      const data = await generateComplaint();
-      setComplaintData(data);
-      setRightTab('complaint');
-    } catch (err) {
-      console.error('Generate failed:', err);
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const handleDownloadPdf = async () => {
-    if (activeComplaintId) {
-      try {
-        const token = useStore.getState().token;
-        const response = await fetch(`${API_BASE}/api/complaint/${activeComplaintId}/pdf`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to download PDF');
-        }
-        
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `CyberSaathi_Complaint_${activeComplaintId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } catch (err) {
-        console.error('PDF Download failed:', err);
-      }
-    }
-  };
-
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 0px)', overflow: 'hidden' }}>
-      {/* ─── Left: Chat Panel ───────────────────────────────── */}
+    <div style={{
+      display: "flex",
+      height: "calc(100vh - 120px)",
+      flexDirection: "column",
+      minHeight: "500px",
+    }}>
+      {/* Header */}
       <div style={{
-        flex: '1 1 0',
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: 0,
-        borderRight: '1px solid var(--color-border)',
+        marginBottom: "16px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: "12px",
       }}>
-        {/* Chat Header */}
-        <div style={{
-          padding: '16px 24px',
-          borderBottom: '1px solid var(--color-border)',
-          background: 'rgba(10,22,40,0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: 36, height: 36,
-              background: 'linear-gradient(135deg,#3b82f6,#6366f1)',
-              borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.1rem',
-              flexShrink: 0,
-            }}>🛡️</div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>CyberSaathi</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block' }} />
-                AI Complaint Assistant
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {risk && <RiskBadge level={risk.level} />}
-            {activeComplaintId && (
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                #{activeComplaintId}
-              </span>
-            )}
-          </div>
+        <div>
+          <h1 style={{
+            fontFamily: "var(--font-display, sans-serif)",
+            fontSize: "1.3rem",
+            fontWeight: 600,
+            color: "#f8fafc",
+            margin: 0,
+          }}>
+            Describe the incident
+          </h1>
+          <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginTop: "2px", margin: 0 }}>
+            Talk it through — CyberSaathi analyzes as you go.
+          </p>
         </div>
 
-        {/* Classification Banner */}
-        {classification?.category && (
-          <div style={{
-            padding: '8px 24px',
-            background: 'rgba(59,130,246,0.06)',
-            borderBottom: '1px solid var(--color-border)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            flexShrink: 0,
-            flexWrap: 'wrap',
-          }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>AI Detected:</span>
+        {activeComplaint?.crime_category && (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <span style={{
-              fontSize: '0.82rem',
-              background: 'rgba(59,130,246,0.15)',
-              color: 'var(--color-blue-light)',
-              padding: '3px 12px',
-              borderRadius: '999px',
-              border: '1px solid rgba(59,130,246,0.25)',
-              fontWeight: 600,
+              fontFamily: "var(--font-mono, monospace)",
+              fontSize: "0.75rem",
+              background: "rgba(59, 130, 246, 0.12)",
+              border: "1px solid rgba(59, 130, 246, 0.25)",
+              color: "#60a5fa",
+              padding: "4px 10px",
+              borderRadius: "6px",
             }}>
-              {classification.category}
+              {activeComplaint.crime_category}
             </span>
-            {classification.confidence && (
-              <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                {Math.round(classification.confidence * 100)}% confident
-              </span>
-            )}
+            <RiskBadge level={activeComplaint.risk_level} score={activeComplaint.risk_score} size="sm" />
           </div>
         )}
-
-        {/* Missing Info Alert */}
-        {missingInfo && missingInfo.length > 0 && (
-          <div style={{
-            padding: '8px 24px',
-            background: 'rgba(234,179,8,0.06)',
-            borderBottom: '1px solid rgba(234,179,8,0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            flexShrink: 0,
-          }}>
-            <AlertCircle size={14} color="#eab308" />
-            <span style={{ fontSize: '0.78rem', color: '#eab308' }}>
-              Still needed: {missingInfo.join(' · ')}
-            </span>
-          </div>
-        )}
-
-        {/* Messages */}
-        <div className="chat-messages" style={{ flex: 1, overflowY: 'auto' }}>
-          {chatMessages.map((msg, i) => (
-            <MessageBubble key={msg.id || i} message={msg} />
-          ))}
-          {sending && (
-            <div className="message-bubble assistant">
-              <div className="message-header">
-                <div className="message-avatar assistant-avatar">🛡️</div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>CyberSaathi</span>
-              </div>
-              <div className="typing-indicator">
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-                <div className="typing-dot" />
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Evidence Files Indicator */}
-        {evidenceFiles.length > 0 && (
-          <div style={{
-            padding: '6px 24px',
-            background: 'rgba(34,197,94,0.06)',
-            borderTop: '1px solid rgba(34,197,94,0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            flexShrink: 0,
-          }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-success)' }}>
-              📎 {evidenceFiles.length} file{evidenceFiles.length > 1 ? 's' : ''} uploaded and analyzed
-            </span>
-          </div>
-        )}
-
-        {/* Input Area */}
-        <div className="chat-input-area" style={{ flexShrink: 0 }}>
-          <div className="chat-input-wrapper">
-            {/* File upload */}
-            <button
-              className="btn btn-icon btn-ghost"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingFile || !activeComplaintId}
-              title="Upload screenshot or document"
-              style={{ flexShrink: 0 }}
-            >
-              {uploadingFile ? (
-                <div className="spinner" style={{ width: 16, height: 16 }} />
-              ) : (
-                <Upload size={18} color="var(--color-text-muted)" />
-              )}
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,.pdf,.txt"
-              style={{ display: 'none' }}
-              onChange={handleFileUpload}
-              id="chat-file-input"
-            />
-
-            <textarea
-              ref={textareaRef}
-              className="chat-textarea"
-              placeholder="Describe what happened... (Press Enter to send, Shift+Enter for new line)"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={1}
-              id="chat-message-input"
-              style={{ maxHeight: '120px' }}
-              onInput={(e) => {
-                e.target.style.height = 'auto';
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-              }}
-            />
-
-            <button
-              className="chat-send-btn"
-              onClick={handleSend}
-              disabled={!input.trim() || sending}
-              id="chat-send-btn"
-            >
-              <Send size={16} />
-            </button>
-          </div>
-
-          {/* Bottom actions */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-              🔒 Secure · All data encrypted
-            </span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={handleGenerate}
-                disabled={generating || chatMessages.length < 3}
-                id="generate-complaint-btn"
-              >
-                {generating ? (
-                  <><div className="spinner" style={{ width: 14, height: 14 }} /> Generating...</>
-                ) : '📋 Generate Complaint'}
-              </button>
-              {complaintData && (
-                <button className="btn btn-primary btn-sm" onClick={handleDownloadPdf} id="download-pdf-btn">
-                  ⬇️ Download PDF
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* ─── Right: Analysis Panel ──────────────────────────── */}
+      {/* Messages area */}
       <div style={{
-        width: '380px',
-        flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'rgba(10,22,40,0.5)',
-        overflowY: 'auto',
+        flex: 1,
+        overflowY: "auto",
+        borderRadius: "12px",
+        border: "1px solid rgba(59, 130, 246, 0.18)",
+        background: "rgba(15, 23, 42, 0.45)",
+        backdropFilter: "blur(12px)",
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
       }}>
-        {/* Risk Meter */}
-        {risk && (
-          <div style={{
-            padding: '20px',
-            borderBottom: '1px solid var(--color-border)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '20px',
-          }}>
-            <RiskMeter score={risk.score} level={risk.level} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--color-text-primary)' }}>
-                Risk Assessment
-              </div>
-              <RiskBadge level={risk.level} showScore score={risk.score} />
-              <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '6px', lineHeight: 1.4 }}>
-                {risk.explanation}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tab Bar */}
-        <div style={{
-          display: 'flex',
-          borderBottom: '1px solid var(--color-border)',
-          flexShrink: 0,
-        }}>
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setRightTab(tab.key)}
+        {messages.map((m, i) => (
+          <div
+            key={m.id || i}
+            style={{
+              display: "flex",
+              justifyContent: m.role === "user" ? "flex-end" : "flex-start",
+            }}
+          >
+            <div
               style={{
-                flex: 1,
-                padding: '12px 4px',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                color: rightTab === tab.key ? 'var(--color-blue-light)' : 'var(--color-text-muted)',
-                borderBottom: rightTab === tab.key ? '2px solid var(--color-blue-primary)' : '2px solid transparent',
-                transition: 'all 0.15s',
+                maxWidth: "78%",
+                borderRadius: "12px",
+                padding: "12px 16px",
+                fontSize: "0.9rem",
+                lineHeight: 1.6,
+                backgroundColor: m.role === "user" ? "#f59e0b" : "rgba(30, 41, 59, 0.75)",
+                color: m.role === "user" ? "#020817" : "#f1f5f9",
+                border: m.role === "user" ? "none" : "1px solid rgba(59, 130, 246, 0.18)",
+                fontWeight: m.role === "user" ? 600 : 400,
+                whiteSpace: "pre-wrap",
+                boxShadow: m.role === "user" ? "0 4px 12px rgba(245, 158, 11, 0.2)" : "0 4px 12px rgba(0, 0, 0, 0.2)",
               }}
             >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
-          {rightTab === 'entities' && (
-            <div>
-              {classification?.category && (
-                <div style={{
-                  marginBottom: '16px',
-                  padding: '12px 16px',
-                  background: 'rgba(59,130,246,0.08)',
-                  border: '1px solid rgba(59,130,246,0.2)',
-                  borderRadius: '10px',
-                }}>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                    Crime Classification
-                  </div>
-                  <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.95rem', marginBottom: '8px' }}>
-                    {classification.category}
-                  </div>
-                  <div className="confidence-bar">
-                    <div className="confidence-fill" style={{ width: `${Math.round((classification.confidence || 0) * 100)}%` }} />
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginTop: '4px', textAlign: 'right' }}>
-                    {Math.round((classification.confidence || 0) * 100)}% confidence
-                  </div>
-
-                  {classification.indicators?.length > 0 && (
-                    <div style={{ marginTop: '10px' }}>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginBottom: '6px' }}>Key Indicators:</div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                        {classification.indicators.slice(0, 6).map((ind, i) => (
-                          <span key={i} style={{
-                            fontSize: '0.72rem',
-                            background: 'rgba(59,130,246,0.12)',
-                            color: 'var(--color-blue-light)',
-                            padding: '2px 8px',
-                            borderRadius: '999px',
-                            border: '1px solid rgba(59,130,246,0.2)',
-                          }}>
-                            ✓ {ind}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              <EntityCard entities={extractedEntities} />
+              {m.content}
             </div>
-          )}
+          </div>
+        ))}
 
-          {rightTab === 'checklist' && (
-            <div>
-              {evidenceFiles.length > 0 && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
-                    Uploaded Files ({evidenceFiles.length})
-                  </div>
-                  {evidenceFiles.map((ef, i) => {
-                    const isImg = ef.file_type === 'image' || (ef.filename && ef.filename.match(/\.(jpg|jpeg|png|webp|bmp|gif)$/i));
-                    const fileId = ef.evidence_id || ef.id;
-                    return (
-                      <div key={fileId || i} style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        padding: '8px 10px',
-                        background: 'rgba(34,197,94,0.06)',
-                        border: '1px solid rgba(34,197,94,0.2)',
-                        borderRadius: '8px',
-                        marginBottom: '8px',
-                        fontSize: '0.82rem',
-                      }}>
-                        <div style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: '4px',
-                          background: 'rgba(0,0,0,0.3)',
-                          overflow: 'hidden',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}>
-                          {isImg && fileId ? (
-                            <img
-                              src={`${API_BASE}/api/evidence/preview/${fileId}`}
-                              alt={ef.filename}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <span style={{ display: isImg && fileId ? 'none' : 'flex', fontSize: '1rem' }}>
-                            {ef.file_type === 'pdf' ? '📄' : '🖼️'}
-                          </span>
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div className="truncate" style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{ef.filename}</div>
-                          <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>
-                            {(ef.document_type || 'evidence').replace('_', ' ')}
-                          </div>
-                        </div>
-                        <span style={{ color: 'var(--color-success)', fontSize: '0.7rem', flexShrink: 0, background: 'rgba(34,197,94,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
-                          ✓ Attached
-                        </span>
-                      </div>
-                    );
-                  })}
-                  <div className="divider" />
-                </div>
-              )}
-              <EvidenceChecklist items={evidenceChecklist} uploadedFiles={evidenceFiles} />
+        {sending && (
+          <div style={{ display: "flex", justifyContent: "flex-start" }}>
+            <div style={{
+              borderRadius: "12px",
+              border: "1px solid rgba(59, 130, 246, 0.18)",
+              background: "rgba(30, 41, 59, 0.6)",
+              padding: "10px 16px",
+              fontSize: "0.85rem",
+              color: "#94a3b8",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}>
+              <span className="spinner" style={{ width: 14, height: 14 }} />
+              CyberSaathi is analyzing & typing...
             </div>
-          )}
-
-          {rightTab === 'complaint' && (
-            <ComplaintPreview
-              complaintText={complaintData?.complaint_text}
-              complaint={complaintData}
-            />
-          )}
-        </div>
-
-        {/* Immediate Actions (if CRITICAL) */}
-        {risk?.level === 'CRITICAL' && risk.immediate_actions && (
-          <div style={{
-            padding: '16px',
-            borderTop: '1px solid rgba(239,68,68,0.2)',
-            background: 'rgba(239,68,68,0.05)',
-            flexShrink: 0,
-          }}>
-            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#ef4444', marginBottom: '8px' }}>
-              ⚠️ Immediate Actions Required
-            </div>
-            {risk.immediate_actions.slice(0, 3).map((action, i) => (
-              <div key={i} style={{
-                fontSize: '0.78rem',
-                color: '#fca5a5',
-                marginBottom: '4px',
-                display: 'flex',
-                gap: '6px',
-              }}>
-                {action}
-              </div>
-            ))}
           </div>
         )}
+        <div ref={scrollRef} />
       </div>
-    </div>
-  );
-}
 
-function MessageBubble({ message }) {
-  const isUser = message.role === 'user';
+      {/* Input Form */}
+      <form onSubmit={handleSend} style={{ marginTop: "16px", display: "flex", gap: "12px" }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type what happened, in your own words..."
+          id="chat-message-input"
+          style={{
+            flex: 1,
+            borderRadius: "8px",
+            border: "1px solid rgba(59, 130, 246, 0.25)",
+            background: "rgba(15, 23, 42, 0.9)",
+            padding: "12px 16px",
+            fontSize: "0.9rem",
+            color: "#f8fafc",
+            outline: "none",
+            boxSizing: "border-box",
+          }}
+        />
+        <button
+          type="submit"
+          disabled={sending || !input.trim()}
+          id="chat-send-btn"
+          style={{
+            borderRadius: "8px",
+            background: "#f59e0b",
+            border: "none",
+            padding: "12px 24px",
+            fontSize: "0.9rem",
+            fontWeight: 700,
+            color: "#020817",
+            cursor: sending || !input.trim() ? "not-allowed" : "pointer",
+            opacity: sending || !input.trim() ? 0.5 : 1,
+            transition: "background 0.2s",
+            flexShrink: 0,
+          }}
+        >
+          Send
+        </button>
+      </form>
 
-  return (
-    <div className={`message-bubble ${isUser ? 'user' : 'assistant'}`}>
-      <div className="message-header">
-        <div className={`message-avatar ${isUser ? 'user-avatar' : 'assistant-avatar'}`}>
-          {isUser ? '👤' : '🛡️'}
-        </div>
-        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-          {isUser ? 'You' : 'CyberSaathi'}
-        </span>
-      </div>
-      <div className="message-content" style={{ whiteSpace: 'pre-wrap' }}>
-        {message.content}
-      </div>
+      <p style={{
+        marginTop: "8px",
+        fontFamily: "var(--font-mono, monospace)",
+        fontSize: "0.72rem",
+        color: "#64748b",
+        margin: "8px 0 0",
+      }}>
+        🛡️ Never share OTPs, PINs, or passwords here or with anyone claiming to help you.
+      </p>
     </div>
   );
 }

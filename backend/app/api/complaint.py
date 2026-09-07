@@ -263,6 +263,48 @@ async def get_complaint(
     }
 
 
+class UpdateComplaintRequest(BaseModel):
+    title: Optional[str] = None
+    incident_date: Optional[str] = None
+    financial_loss: Optional[float] = None
+    payment_method: Optional[str] = None
+
+
+@router.patch("/{complaint_id}")
+async def update_complaint_details(
+    complaint_id: int,
+    data: UpdateComplaintRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update editable fields on a complaint."""
+    result = await db.execute(
+        select(Complaint).where(
+            Complaint.id == complaint_id,
+            Complaint.user_id == current_user.id,
+        )
+    )
+    complaint = result.scalar_one_or_none()
+    if not complaint:
+        raise HTTPException(status_code=404, detail="Complaint not found.")
+
+    if data.title is not None:
+        complaint.title = data.title
+    if data.financial_loss is not None:
+        complaint.financial_loss = data.financial_loss
+    if data.payment_method is not None:
+        complaint.payment_method = data.payment_method
+    if data.incident_date is not None:
+        try:
+            from datetime import datetime
+            complaint.incident_date = datetime.fromisoformat(data.incident_date)
+        except Exception:
+            pass
+
+    db.add(complaint)
+    return {"message": "Complaint updated successfully.", "id": complaint.id}
+
+
 @router.delete("/{complaint_id}")
 async def delete_complaint(
     complaint_id: int,

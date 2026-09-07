@@ -10,22 +10,27 @@ const RISK_CONFIGS = {
 export default function RiskBadge({ level, score, showScore = false, size = 'normal' }) {
   if (!level) return null;
   const config = RISK_CONFIGS[level] || RISK_CONFIGS.MEDIUM;
+  const isSmall = size === 'sm';
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-      <span className={`risk-badge risk-badge-${config.color}`}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+      <span
+        className={`risk-badge risk-badge-${config.color}`}
+        style={isSmall ? { padding: '2px 8px', fontSize: '0.72rem', letterSpacing: '0.04em' } : {}}
+      >
         {config.label}
       </span>
-      {showScore && score !== undefined && (
+      {(showScore || score !== undefined) && score !== null && (
         <span style={{
-          fontSize: '0.78rem',
+          fontSize: isSmall ? '0.7rem' : '0.78rem',
           color: 'var(--color-text-muted)',
-          background: 'rgba(255,255,255,0.04)',
-          padding: '2px 8px',
+          background: 'rgba(255,255,255,0.05)',
+          padding: isSmall ? '1px 6px' : '2px 8px',
           borderRadius: '999px',
           border: '1px solid var(--color-border)',
+          fontFamily: 'var(--font-mono)',
         }}>
-          Score: {score}/100
+          {score}/100
         </span>
       )}
     </div>

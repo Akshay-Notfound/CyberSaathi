@@ -1,246 +1,225 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FileText, MessageSquare, AlertTriangle, CheckCircle, Plus, TrendingUp, Shield, Clock } from 'lucide-react';
-import useStore from '../store/useStore';
-import RiskBadge from '../components/RiskBadge';
-
-const STATUS_LABELS = {
-  DRAFT: 'Draft',
-  IN_PROGRESS: 'In Progress',
-  COMPLETE: 'Complete',
-  SUBMITTED: 'Submitted',
-};
-
-const STATUS_COLORS = {
-  DRAFT: 'status-draft',
-  IN_PROGRESS: 'status-in-progress',
-  COMPLETE: 'status-complete',
-  SUBMITTED: 'status-submitted',
-};
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import RiskBadge from "../components/RiskBadge";
+import useComplaintStore from "../store/complaintStore";
+import useStore from "../store/useStore";
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { user, complaints, loadComplaints, startComplaint, setActiveComplaint } = useStore();
+  const { complaints, fetchComplaints, createComplaint } = useComplaintStore();
+  const { setActiveComplaint } = useStore();
   const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    loadComplaints().finally(() => setLoading(false));
+    fetchComplaints().finally(() => setLoading(false));
   }, []);
 
-  const handleNewComplaint = async () => {
-    await startComplaint();
-    navigate('/chat');
+  const handleNewCase = async () => {
+    setCreating(true);
+    try {
+      const complaint = await createComplaint("Untitled Incident");
+      setActiveComplaint(complaint.id);
+      navigate("/chat");
+    } finally {
+      setCreating(false);
+    }
   };
 
-  const handleOpenComplaint = async (complaint) => {
+  const handleOpenCase = (complaint) => {
     setActiveComplaint(complaint.id);
-    navigate('/chat');
+    navigate("/chat");
   };
 
-  // Stats
-  const totalComplaints = complaints.length;
-  const criticalCount = complaints.filter((c) => c.risk_level === 'CRITICAL').length;
-  const completeCount = complaints.filter((c) => c.status === 'COMPLETE' || c.status === 'SUBMITTED').length;
-  const totalLoss = complaints.reduce((sum, c) => sum + (c.financial_loss || 0), 0);
-
   return (
-    <div className="page-container">
-      {/* Header */}
-      <div className="section-header">
-        <div>
-          <div className="section-title">
-            <Shield size={24} color="var(--color-blue-primary)" />
-            Dashboard
-          </div>
-          <div className="section-subtitle">
-            Welcome back, {user?.full_name || 'User'} · Your cybercrime complaint overview
-          </div>
-        </div>
-        <button className="btn btn-primary" onClick={handleNewComplaint} id="new-complaint-btn">
-          <Plus size={18} />
-          New Complaint
-        </button>
-      </div>
+    <div style={{ minHeight: "100vh", backgroundColor: "#020817", color: "#f1f5f9" }}>
+      <Navbar />
 
-      {/* Stats Grid */}
-      <div className="stats-grid" style={{ marginBottom: '32px' }}>
-        <StatCard
-          icon={<FileText size={20} />}
-          iconColor="#3b82f6"
-          value={totalComplaints}
-          label="Total Complaints"
-        />
-        <StatCard
-          icon={<AlertTriangle size={20} />}
-          iconColor="#ef4444"
-          value={criticalCount}
-          label="Critical Incidents"
-          valueColor={criticalCount > 0 ? '#ef4444' : undefined}
-        />
-        <StatCard
-          icon={<CheckCircle size={20} />}
-          iconColor="#22c55e"
-          value={completeCount}
-          label="Completed"
-        />
-        <StatCard
-          icon={<TrendingUp size={20} />}
-          iconColor="#f97316"
-          value={totalLoss > 0 ? `₹${(totalLoss / 1000).toFixed(0)}K` : '₹0'}
-          label="Total Reported Loss"
-        />
-      </div>
-
-      {/* Urgent Alert */}
-      {criticalCount > 0 && (
-        <div className="alert alert-critical" style={{ marginBottom: '24px' }}>
-          <AlertTriangle size={18} style={{ flexShrink: 0, marginTop: 2 }} />
+      <div style={{ maxWidth: "1024px", margin: "0 auto", padding: "40px 24px" }}>
+        {/* Header */}
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+          marginBottom: "32px",
+        }}>
           <div>
-            <strong>Urgent Action Required</strong> — You have {criticalCount} critical-risk complaint{criticalCount > 1 ? 's' : ''}.
-            Call the National Cybercrime Helpline <strong>1930</strong> immediately or visit{' '}
-            <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', fontWeight: 700 }}>
-              cybercrime.gov.in
-            </a>
-          </div>
-        </div>
-      )}
-
-      {/* Complaints Table */}
-      <div className="glass-card" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MessageSquare size={18} color="var(--color-blue-primary)" />
-            Your Complaints
-          </h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{totalComplaints} total</span>
-        </div>
-
-        {loading ? (
-          <div style={{ padding: '48px', textAlign: 'center' }}>
-            <div className="spinner" style={{ margin: '0 auto' }} />
-          </div>
-        ) : complaints.length === 0 ? (
-          <div style={{ padding: '64px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>🛡️</div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px', color: 'var(--color-text-primary)' }}>
-              No complaints yet
-            </div>
-            <p style={{ marginBottom: '24px' }}>
-              Start a new complaint to report a cybercrime incident with AI assistance.
+            <h1 style={{
+              fontFamily: "var(--font-display, sans-serif)",
+              fontSize: "1.75rem",
+              fontWeight: 700,
+              color: "#f8fafc",
+              marginBottom: "4px",
+            }}>
+              Your cases
+            </h1>
+            <p style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
+              Every incident you've described lives here as a case file.
             </p>
-            <button className="btn btn-primary" onClick={handleNewComplaint}>
-              <Plus size={18} /> Start Your First Complaint
-            </button>
           </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Crime Category</th>
-                  <th>Risk</th>
-                  <th>Loss</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {complaints.map((c) => (
-                  <tr key={c.id} style={{ cursor: 'pointer' }} onClick={() => handleOpenComplaint(c)}>
-                    <td style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>#{c.id}</td>
-                    <td style={{ fontWeight: 600, maxWidth: '200px' }}>
-                      <div className="truncate">{c.title || `Complaint #${c.id}`}</div>
-                    </td>
-                    <td>
-                      <span style={{
-                        fontSize: '0.8rem',
-                        background: 'rgba(59,130,246,0.1)',
-                        color: 'var(--color-blue-light)',
-                        padding: '3px 10px',
-                        borderRadius: '999px',
-                        border: '1px solid rgba(59,130,246,0.2)',
-                        whiteSpace: 'nowrap',
-                      }}>
-                        {c.crime_category || '—'}
-                      </span>
-                    </td>
-                    <td><RiskBadge level={c.risk_level} /></td>
-                    <td style={{ fontWeight: 600 }}>
-                      {c.financial_loss ? `₹${Number(c.financial_loss).toLocaleString('en-IN')}` : '—'}
-                    </td>
-                    <td>
-                      <span className={`status-badge ${STATUS_COLORS[c.status] || ''}`}>
-                        {STATUS_LABELS[c.status] || c.status}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
-                      <Clock size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                      {new Date(c.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={(e) => { e.stopPropagation(); handleOpenComplaint(c); }}
-                      >
-                        Open →
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
 
-      {/* Quick Links */}
-      <div style={{
-        marginTop: '24px',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '16px',
-      }}>
-        {[
-          { icon: '📞', label: 'National Cybercrime Helpline', value: '1930', sub: 'Call immediately for urgent cases' },
-          { icon: '🌐', label: 'Official Reporting Portal', value: 'cybercrime.gov.in', sub: 'File your complaint online', link: 'https://cybercrime.gov.in' },
-          { icon: '💡', label: 'AI Model Comparison', value: 'View Benchmarks →', sub: 'See ML model accuracy comparison', link: '/model-comparison' },
-        ].map((item, i) => (
-          <a
-            key={i}
-            href={item.link || '#'}
-            target={item.link?.startsWith('http') ? '_blank' : '_self'}
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'none' }}
-            onClick={item.link?.startsWith('/') ? (e) => { e.preventDefault(); navigate(item.link); } : undefined}
+          <button
+            onClick={handleNewCase}
+            disabled={creating}
+            id="dashboard-new-case-btn"
+            style={{
+              borderRadius: "8px",
+              background: "#f59e0b",
+              border: "none",
+              padding: "10px 20px",
+              fontSize: "0.9rem",
+              fontWeight: 700,
+              color: "#020817",
+              cursor: creating ? "not-allowed" : "pointer",
+              opacity: creating ? 0.6 : 1,
+              transition: "background 0.2s",
+            }}
           >
-            <div className="glass-card" style={{ padding: '16px 20px', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginBottom: '2px' }}>{item.label}</div>
-                  <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', fontSize: '0.95rem' }}>{item.value}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{item.sub}</div>
-                </div>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
+            {creating ? "Creating..." : "+ New case"}
+          </button>
+        </div>
 
-function StatCard({ icon, iconColor, value, label, valueColor }) {
-  return (
-    <div className="stat-card">
-      <div className="stat-icon" style={{ background: `${iconColor}18`, color: iconColor }}>
-        {icon}
+        {/* Content list */}
+        <div>
+          {loading && (
+            <div style={{ padding: "48px 0", textAlign: "center", color: "#94a3b8" }}>
+              <div className="spinner" style={{ margin: "0 auto 12px" }} />
+              Loading your cases...
+            </div>
+          )}
+
+          {!loading && complaints.length === 0 && (
+            <div style={{
+              borderRadius: "12px",
+              border: "1px dashed rgba(59, 130, 246, 0.25)",
+              background: "rgba(15, 23, 42, 0.4)",
+              padding: "48px 24px",
+              textAlign: "center",
+            }}>
+              <p style={{
+                fontFamily: "var(--font-display, sans-serif)",
+                fontSize: "1.2rem",
+                fontWeight: 600,
+                color: "#f8fafc",
+                marginBottom: "8px",
+              }}>
+                No cases yet
+              </p>
+              <p style={{ fontSize: "0.9rem", color: "#94a3b8", maxWidth: "450px", margin: "0 auto 20px" }}>
+                Start a new case and describe what happened — CyberSaathi will take it from there.
+              </p>
+              <button
+                onClick={handleNewCase}
+                style={{
+                  borderRadius: "8px",
+                  background: "rgba(59, 130, 246, 0.15)",
+                  border: "1px solid rgba(59, 130, 246, 0.3)",
+                  color: "#60a5fa",
+                  fontWeight: 600,
+                  padding: "8px 18px",
+                  cursor: "pointer",
+                }}
+              >
+                + Start your first case
+              </button>
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {complaints.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => handleOpenCase(c)}
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  borderRadius: "12px",
+                  border: "1px solid rgba(59, 130, 246, 0.15)",
+                  background: "rgba(15, 23, 42, 0.55)",
+                  backdropFilter: "blur(12px)",
+                  padding: "20px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  color: "inherit",
+                  transition: "all 0.2s ease",
+                  boxSizing: "border-box",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.4)";
+                  e.currentTarget.style.background = "rgba(15, 23, 42, 0.85)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.15)";
+                  e.currentTarget.style.background = "rgba(15, 23, 42, 0.55)";
+                }}
+              >
+                <div style={{ minWidth: 0, flex: 1, paddingRight: "16px" }}>
+                  <p style={{
+                    fontFamily: "var(--font-display, sans-serif)",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    color: "#f8fafc",
+                    margin: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {c.title || `Case #${c.id}`}
+                  </p>
+                  <p style={{
+                    fontSize: "0.85rem",
+                    color: "#94a3b8",
+                    marginTop: "4px",
+                    marginBottom: "8px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {c.raw_description || c.incident_description || "No description added yet."}
+                  </p>
+                  <p style={{
+                    fontFamily: "var(--font-mono, monospace)",
+                    fontSize: "0.72rem",
+                    color: "#64748b",
+                    margin: 0,
+                  }}>
+                    Updated {new Date(c.updated_at || c.created_at || Date.now()).toLocaleString("en-IN")}
+                  </p>
+                </div>
+
+                <div style={{
+                  marginLeft: "16px",
+                  display: "flex",
+                  flexShrink: 0,
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: "8px",
+                }}>
+                  <RiskBadge level={c.risk_level} score={c.risk_score} size="sm" />
+                  {c.crime_category && (
+                    <span style={{
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontSize: "0.72rem",
+                      color: "#94a3b8",
+                      background: "rgba(59, 130, 246, 0.1)",
+                      border: "1px solid rgba(59, 130, 246, 0.2)",
+                      borderRadius: "6px",
+                      padding: "2px 8px",
+                    }}>
+                      {c.crime_category}
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="stat-value" style={{ color: valueColor }}>{value}</div>
-      <div className="stat-label">{label}</div>
     </div>
   );
 }

@@ -22,19 +22,47 @@ const useStore = create(
       token: null,
       isAuthenticated: false,
 
-      login: async (email, password) => {
+      login: async (emailOrObj, passwordArg) => {
+        let email, password;
+        if (typeof emailOrObj === 'object' && emailOrObj !== null) {
+          email = emailOrObj.email;
+          password = emailOrObj.password;
+        } else {
+          email = emailOrObj;
+          password = passwordArg;
+        }
         const res = await api.post('/api/auth/login', { email, password });
+        localStorage.setItem('cybersaathi_token', res.data.access_token);
+        localStorage.setItem('cybersaathi_user', JSON.stringify(res.data.user));
         set({ token: res.data.access_token, user: res.data.user, isAuthenticated: true });
-        return res.data;
+        return { ok: true, ...res.data };
       },
 
-      register: async (email, full_name, password, phone) => {
+      register: async (emailOrObj, fullNameArg, passwordArg, phoneArg) => {
+        let email, full_name, password, phone;
+        if (typeof emailOrObj === 'object' && emailOrObj !== null) {
+          email = emailOrObj.email;
+          full_name = emailOrObj.full_name;
+          password = emailOrObj.password;
+          phone = emailOrObj.phone || '';
+        } else {
+          email = emailOrObj;
+          full_name = fullNameArg;
+          password = passwordArg;
+          phone = phoneArg || '';
+        }
         const res = await api.post('/api/auth/register', { email, full_name, password, phone });
+        localStorage.setItem('cybersaathi_token', res.data.access_token);
+        localStorage.setItem('cybersaathi_user', JSON.stringify(res.data.user));
         set({ token: res.data.access_token, user: res.data.user, isAuthenticated: true });
-        return res.data;
+        return { ok: true, ...res.data };
       },
 
-      logout: () => set({ user: null, token: null, isAuthenticated: false, complaints: [] }),
+      logout: () => {
+        localStorage.removeItem('cybersaathi_token');
+        localStorage.removeItem('cybersaathi_user');
+        set({ user: null, token: null, isAuthenticated: false, complaints: [] });
+      },
 
       // ─── Active Complaint ────────────────────────────────────────────
       activeComplaintId: null,
@@ -99,16 +127,31 @@ const useStore = create(
       },
 
       // ─── Evidence ────────────────────────────────────────────────────
-      uploadEvidence: async (file) => {
+      uploadEvidence: async (complaintIdOrFile, fileArg) => {
         const state = get();
+        let complaintId = state.activeComplaintId;
+        let file = complaintIdOrFile;
+        if (fileArg !== undefined) {
+          complaintId = complaintIdOrFile;
+          file = fileArg;
+        }
         const formData = new FormData();
-        formData.append('complaint_id', state.activeComplaintId);
+        formData.append('complaint_id', complaintId);
         formData.append('file', file);
         const res = await api.post('/api/evidence/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
+        const formatted = {
+          id: res.data.id,
+          filename: res.data.filename || file.name,
+          file_type: res.data.file_type || 'image',
+          document_type: res.data.document_type,
+          extracted_text: res.data.extracted_text,
+          detected_entities: res.data.entities || res.data.detected_entities || {},
+          ocr_preview: res.data.extracted_text ? res.data.extracted_text.slice(0, 200) : '',
+        };
         set((s) => ({
-          evidenceFiles: [...s.evidenceFiles, res.data],
+          evidenceFiles: [...s.evidenceFiles, formatted],
           extractedEntities: { ...s.extractedEntities, ...(res.data.entities || {}) },
         }));
         return res.data;
@@ -116,7 +159,24 @@ const useStore = create(
 
       loadEvidence: async (complaintId) => {
         const res = await api.get(`/api/evidence/${complaintId}`);
-        set({ evidenceFiles: res.data.evidence_files || [] });
+        const files = (res.data.evidence_files || []).map((f) => ({
+          id: f.id,
+          filename: f.filename,
+          file_type: f.file_type,
+          document_type: f.document_type,
+          extracted_text: f.ocr_preview || f.extracted_text,
+          detected_entities: f.entities || {},
+          uploaded_at: f.uploaded_at,
+        }));
+        set({ evidenceFiles: files });
+        return files;
+      },
+
+      deleteEvidence: async (evidenceId, complaintId) => {
+        await api.delete(`/api/evidence/${evidenceId}`);
+        set((s) => ({
+          evidenceFiles: s.evidenceFiles.filter((f) => f.id !== evidenceId),
+        }));
       },
 
       // ─── Complaint List ──────────────────────────────────────────────

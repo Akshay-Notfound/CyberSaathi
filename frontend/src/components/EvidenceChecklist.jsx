@@ -4,16 +4,24 @@ import { CheckSquare, Square } from 'lucide-react';
 export default function EvidenceChecklist({ items = [], uploadedFiles = [] }) {
   const [checked, setChecked] = useState({});
 
+  const normalizedItems = (Array.isArray(items) ? items : []).map((item) => {
+    if (typeof item === 'string') return item;
+    if (item && typeof item === 'object') {
+      return item.item || item.name || item.description || item.title || JSON.stringify(item);
+    }
+    return String(item);
+  });
+
   // Auto-check if uploaded file matches a checklist item keyword
-  const isAutoChecked = (item) => {
-    const itemLower = item.toLowerCase();
-    return uploadedFiles.some((f) => {
+  const isAutoChecked = (itemStr) => {
+    const itemLower = String(itemStr || '').toLowerCase();
+    return (uploadedFiles || []).some((f) => {
       const name = (f.filename || '').toLowerCase();
       const docType = (f.document_type || '').toLowerCase();
       return (
         itemLower.includes('screenshot') && (name.includes('.png') || name.includes('.jpg')) ||
         itemLower.includes('pdf') && name.includes('.pdf') ||
-        docType && itemLower.includes(docType.replace('_', ' '))
+        (docType && itemLower.includes(docType.replace('_', ' ')))
       );
     });
   };
@@ -22,7 +30,7 @@ export default function EvidenceChecklist({ items = [], uploadedFiles = [] }) {
     setChecked((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  if (!items || items.length === 0) {
+  if (!normalizedItems || normalizedItems.length === 0) {
     return (
       <div style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', padding: '12px' }}>
         Start describing your incident to get an evidence checklist.
@@ -30,17 +38,17 @@ export default function EvidenceChecklist({ items = [], uploadedFiles = [] }) {
     );
   }
 
-  const checkedCount = items.filter((item, i) => checked[i] || isAutoChecked(item)).length;
+  const checkedCount = normalizedItems.filter((item, i) => checked[i] || isAutoChecked(item)).length;
 
   return (
     <div>
       {/* Progress */}
       <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-          {checkedCount} / {items.length} items
+          {checkedCount} / {normalizedItems.length} items
         </span>
-        <span style={{ fontSize: '0.8rem', color: checkedCount === items.length ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
-          {Math.round((checkedCount / items.length) * 100)}% complete
+        <span style={{ fontSize: '0.8rem', color: checkedCount === normalizedItems.length ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
+          {Math.round((checkedCount / normalizedItems.length) * 100)}% complete
         </span>
       </div>
 
@@ -48,8 +56,8 @@ export default function EvidenceChecklist({ items = [], uploadedFiles = [] }) {
         <div
           className="confidence-fill"
           style={{
-            width: `${Math.round((checkedCount / items.length) * 100)}%`,
-            background: checkedCount === items.length
+            width: `${Math.round((checkedCount / normalizedItems.length) * 100)}%`,
+            background: checkedCount === normalizedItems.length
               ? 'linear-gradient(90deg, #22c55e, #4ade80)'
               : undefined,
           }}
@@ -57,7 +65,7 @@ export default function EvidenceChecklist({ items = [], uploadedFiles = [] }) {
       </div>
 
       <div className="checklist">
-        {items.map((item, index) => {
+        {normalizedItems.map((item, index) => {
           const isChecked = checked[index] || isAutoChecked(item);
           return (
             <div
