@@ -20,7 +20,7 @@ export default function Login() {
     } catch (err) {
       let msg = "Invalid email or password. Please try again.";
       if (!err.response) {
-        msg = "Cannot connect to backend server. Please make sure the backend server is running at http://localhost:8000.";
+        msg = "Unable to connect to the backend server. Please verify the backend service is running and accessible.";
       } else if (err.response?.data?.detail) {
         const detail = err.response.data.detail;
         msg = typeof detail === "string" ? detail : Array.isArray(detail) ? detail.map((d) => d.msg || JSON.stringify(d)).join(", ") : JSON.stringify(detail);

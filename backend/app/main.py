@@ -3,7 +3,8 @@ AI-Powered Cyber Crime Complaint & Assistance System
 FastAPI Application Entrypoint
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
@@ -87,6 +88,28 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     logger.info("Shutting down application...")
+
+
+# ─── Global Exception Handler ───────────────────────────────────────────────
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Global unhandled error on {request.url.path}: {exc}", exc_info=True)
+    err_str = str(exc)
+    if "Network is unreachable" in err_str or "101" in err_str or "asyncpg" in err_str:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": (
+                    "Database unreachable: Please ensure DATABASE_URL in Render environment variables "
+                    "uses Supabase's IPv4 Pooler URL (aws-0-ap-south-1.pooler.supabase.com) rather than direct IPv6 host."
+                )
+            },
+        )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal Server Error: {err_str}"},
+    )
 
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
