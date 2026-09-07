@@ -7,12 +7,19 @@ class Base(DeclarativeBase):
     pass
 
 
+connect_args = {}
+if "asyncpg" in settings.DATABASE_URL:
+    # Disable prepared statement caching for Supabase/PgBouncer poolers
+    if any(k in settings.DATABASE_URL for k in ["pooler", "6543", "5432", "supabase"]):
+        connect_args["statement_cache_size"] = 0
+
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=settings.DEBUG,
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,
+    connect_args=connect_args,
 )
 
 AsyncSessionLocal = async_sessionmaker(
